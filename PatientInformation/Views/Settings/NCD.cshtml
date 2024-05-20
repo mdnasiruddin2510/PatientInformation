@@ -1,0 +1,59 @@
+﻿@{
+    ViewData["Title"] = "NCD Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .page-title{
+        font-size: 20px;
+        margin: 0;
+    }
+</style>
+<!-- Content Header (Page header) -->
+<div class="row mb-2">
+    <div class="col-sm-6">
+        <h4 class="page-title">NCD Information</h4>
+    </div><!-- /.col -->
+</div><!-- /.row -->
+<!-- /.content-header -->
+<div class="row">
+    <div class="col-3">
+        <div class="card" id="addNCD">
+            <div class="card-header">
+                <h3 class="card-title">Add New NCD</h3>
+            </div>
+            <div class="card-body">
+                <form id="addNCDForm" method="post">
+                    <div class="form-group">
+                        <label for="addName">Name<span class="text-danger">*</span></label>
+                        <input type="text" id="addName" name="addName" class="form-control-sm form-control" required placeholder="e.g Name" />
+                    </div>
+                    <br />
+                    <div class="form-group">
+                        <button type="button" id="btnAddNCD" class="btn btn-success float-right btn-sm"><i class="fa fa-save"></i>&nbsp;  Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <h3 class="card-title">NCD List</h3>
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="tblDealerInfo" class="table table-bordered table-bordered table-sm">
+                    <thead>
+                        <tr>
+                            <th style="width:5%;">Sl</th>
+                            <th style="width:20%;">Name</th>
+                            <th style="width:20%;text-align:center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
