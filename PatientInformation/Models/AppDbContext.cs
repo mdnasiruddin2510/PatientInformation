@@ -9,5 +9,7 @@ namespace PatientInformation.Models
 
         }
         public DbSet<NCD> NCD { get; set; }
+        public DbSet<Allergies> Allergies { get; set; }
+        public DbSet<Disease> Disease { get; set; }
     }
 }

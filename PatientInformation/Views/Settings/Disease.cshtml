@@ -1,0 +1,265 @@
+﻿@{
+    ViewData["Title"] = "Disease Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .page-title {
+        font-size: 20px;
+        margin: 0;
+    }
+</style>
+<!-- Content Header (Page header) -->
+<div class="row mb-2">
+    <div class="col-sm-6">
+        <h4 class="page-title">Disease Information</h4>
+    </div><!-- /.col -->
+</div><!-- /.row -->
+<!-- /.content-header -->
+<div class="row">
+    <div class="col-md-3">
+        <div class="card" id="addDisease">
+            <div class="card-header">
+                <h3 class="card-title">Add New Disease</h3>
+            </div>
+            <div class="card-body">
+                <form id="addDiseaseForm" method="post">
+                    <div class="form-group">
+                        <label for="addName">Name<span class="text-danger">*</span></label>
+                        <input type="hidden" id="id" />
+                        <input type="text" id="addName" name="addName" autocomplete="off" class="form-control-sm form-control" required placeholder="e.g Name" />
+                    </div>
+                    <br />
+                    <div class="form-group">
+                        <button type="button" id="btnAddDisease" class="btn btn-success float-right btn-sm"><i class="fa fa-save"></i>&nbsp;  Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <h3 class="card-title">Disease List</h3>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tblDiseaseInfo" class="table table-bordered table-bordered table-sm">
+                    <thead>
+                        <tr>
+                            <th style="width:5%;">Sl</th>
+                            <th style="width:20%;">Name</th>
+                            <th style="width:20%;text-align:center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#addDiseaseForm").find("#addName").eq(0).focus();
+        });
+        $(document).on('keydown', "#addName", function (e) {
+            if (e.which == 13) {
+                $("#btnAddDisease").click();
+            }
+        });
+        $("#btnAddDisease").click(function () {
+            if ($("#addDiseaseForm").valid()) {
+                $("#btnAddDisease").prop("disabled", true);
+                var btnName = $("#btnAddDisease").text();
+                var obj = {
+                    name: $("#addName").val()
+                }
+                let url = baseURL + '/api/Disease/CreateDisease';
+                if (btnName == "Update") {
+                    obj.id = $("#id").val();
+                    url = baseURL + '/api/Disease/EditDisease';
+                }
+                $.ajax({
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    url: url,
+                    dataType: "json",
+                    type: 'POST',
+                    data: JSON.stringify(obj),
+                    type: 'post',
+                    success: function (response) {
+                        if (response.type == "Success") {
+                            toastr.success(response.message, response.type);
+                            $("#addDiseaseForm").trigger("reset");
+                            $("#btnAddDisease").text("Save");
+                            dataTable.fnFilter();
+                        }
+                        else {
+                            toastr.error(response.message, response.type);
+                        }
+                        $("#btnAddDisease").prop("disabled", false);
+                    }
+                });
+            }
+        });
+
+        $(document).on("click", ".edit", function (e) {
+            e.preventDefault();
+            var Id = $(this).data('id');
+            var currentTableROW = $(this).closest("tr");
+            $("#id").val(Id);
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                url: baseURL + '/api/Disease/GetDiseaseById?id=' + Id,
+                dataType: "json",
+                type: 'get',
+                success: function (response) {
+                    $("#addName").val(response.name);
+                    $("#btnAddDisease").text("Update");
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+        $(document).on("click", ".delete", function (e) {
+            e.preventDefault();
+            var Id = $(this).data('id');
+            var currentTableROW = $(this).closest("tr");
+
+            $.confirm({
+                title: 'Delete Confirmation!',
+                content: 'Are you sure want to delete this?',
+                type: 'red',
+                typeAnimated: true,
+                buttons: {
+                    tryAgain: {
+                        text: 'Delete',
+                        btnClass: 'btn-red',
+                        action: function () {
+                            $.ajax({
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+                                url: baseURL + '/api/Disease/RemoveDisease?id=' + Id,
+                                dataType: "json",
+                                type: 'delete',
+                                success: function (res) {
+                                    if (res) {
+                                        $.confirm({
+                                            title: 'Confirmation!',
+                                            content: 'Record has been deleted successfully!',
+                                            type: 'green',
+                                            buttons: {
+                                                somethingElse: {
+                                                    text: 'Ok',
+                                                    btnClass: 'btn-blue',
+                                                    keys: ['enter'],
+                                                    action: function () {
+                                                        currentTableROW.fadeOut();
+                                                        dataTable.fnFilter();
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        $.confirm({
+                                            title: 'Confirmation!',
+                                            content: 'Cannot delete!',
+                                            type: 'green',
+                                            buttons: {
+                                                somethingElse: {
+                                                    text: 'Ok',
+                                                    btnClass: 'btn-red',
+                                                    keys: ['enter'],
+                                                    action: function () {
+                                                        dataTable.fnFilter();
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    close: function () {
+                    }
+                }
+            })
+        });
+
+
+        var dataTable = $("#tblDiseaseInfo").dataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "order": [0, "asc"],
+            "ajax": {
+                "url": baseURL + '/api/Disease/GetALLDisease',
+                "type": "POST",
+            },
+            drawCallback: function () {
+                var api = this.api();
+                var num_rows = api.page.info().recordsTotal;
+            },
+            "columns": [
+                {
+                    "data": null, "name": null, "render": function (data, type, val, meta) {
+                        return `<td>${meta.row + 1}</td>`;
+                    }
+                },
+                {
+                    "data": null, "name": null, "render": function (data, type, val, meta) {
+                        return `<td>${val.name}</td>`;
+                    }
+                },
+                {
+                    "orderable": false,
+                    "data": "Null",
+                    "render": function (data, type, full, meta) {
+
+                        let btnEdit = ``;
+                        btnEdit = `<a class="btn btn-sm btn-primary edit" data-id="${full.id}" href = "#" > <i class="fa fa-edit" > </i> &nbsp; Edit</a >`;
+                        let btnDelete = ``;
+                        btnDelete = `<a class="btn btn-sm btn-danger delete" data-id="${full.id}" href = "#" > <i class="fa fa-trash" > </i> &nbsp; Delete</a >`;
+
+                        return `<p class='text-center' style="padding-top:3px;margin:0;">${btnEdit}&emsp;${btnDelete}</p>`
+                    }
+
+                }
+            ]
+
+        });
+
+        $("#addDiseaseForm").validate({
+            rules: {
+                addName: { required: true }
+            },
+            messages: {
+                addName: 'Name is required'
+            },
+            errorElement: 'span',
+            errorPlacement: function (error, element) {
+                error.addClass('invalid-feedback');
+                element.closest('.form-group').append(error);
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass('is-invalid');
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass('is-invalid');
+            }
+        });
+    </script>
+}

@@ -1,0 +1,149 @@
+﻿@{
+    ViewData["Title"] = "Patient Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .page-title {
+        font-size: 20px;
+        margin: 0;
+    }
+</style>
+<!-- Content Header (Page header) -->
+<div class="row mb-2">
+    <div class="col-sm-6">
+        <h4 class="page-title">Patient Information</h4>
+    </div><!-- /.col -->
+</div><!-- /.row -->
+<!-- /.content-header -->
+<div class="row">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3 class="card-title">Patient List</h3>
+                    </div> 
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-end">
+                            <button type="button" id="btnAdd" class="btn btn-primary float-right btn-sm"><i class="fa fa-plus"></i>&nbsp;  Add New</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tblNCDInfo" class="table table-bordered table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th style="width:5%;">Sl</th>
+                                <th style="width:20%;">Patient Name</th>
+                                <th style="width:20%;">Disease Name</th>
+                                <th style="width:20%;">Epilepsy</th>
+                                <th style="width:20%;">NCDs</th>
+                                <th style="width:20%;">Allergies</th>
+                                <th style="width:20%;text-align:center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalPatient" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title m-0">Patient Create</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card-body">
+                    <form id="frmPatient">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="patientName">Patient Name</label>
+                                        <input type="hidden" id="patientId" />
+                                        <input id="patientName" name="patientName" placeholder="e.g Patient Name" class="form-control-sm form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="diseaseId">Diseases Name</label>
+                                        <select id="diseaseId" name="diseaseId" class="form-control-sm form-control select2Modal"></select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="epilepsy">Epilepsy</label>
+                                        <select id="epilepsy" name="epilepsy" class="form-control-sm form-control select2Modal"></select>
+                                    </div>
+                                </div>
+                             </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success btn-sm" id="btnSave">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            
+        });
+        function getDiseaseDrpdown() {
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                url: baseURL + '/api/Disease/GetAllDiseaseForDropdown',
+                dataType: "json",
+                type: 'get',
+                success: function (res) {
+                    $("#diseaseId").empty();
+                    let option = ``;
+                    $.each(res, function (key, val) {
+                        option += `<option value="${val.value}">${val.text}</option>`;
+                    });
+                    $("#diseaseId").append(option);
+                }
+            });
+        };
+        function getEpilepsyDrpdown() {
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                url: baseURL + '/api/Disease/GetEpilepsyDropdown',
+                dataType: "json",
+                type: 'get',
+                success: function (res) {
+                    $("#epilepsy").empty();
+                    let option = ``;
+                    $.each(res, function (key, val) {
+                        option += `<option value="${val.value}">${val.text}</option>`;
+                    });
+                    $("#epilepsy").append(option);
+                }
+            });
+        };
+        $(document).on("click", "#btnAdd", function () {
+            $("#modalPatient #modalTitle").text("Create Patient");
+            $("#modalPatient #btnSave").text("Save changes");
+            $("#frmPatient").trigger("reset");
+            getDiseaseDrpdown();
+            getEpilepsyDrpdown();
+            $("#modalPatient").modal("show");
+        });
+    </script>
+}

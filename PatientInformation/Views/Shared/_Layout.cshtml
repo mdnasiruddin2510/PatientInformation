@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Patient Information | Dashboard</title>
-
+    <title>Patient Information | @ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
@@ -24,7 +24,13 @@
     <!-- Daterange picker -->
     <link rel="stylesheet" href="~/plugins/daterangepicker/daterangepicker.css">
     <!-- summernote -->
+   
+    <link href="~/plugins/jquery-ui/jquery-ui.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/plugins/summernote/summernote-bs4.min.css">
+    <link href="~/lib/datatables/datatables.min.css" rel="stylesheet" />
+    <link href="~/lib/select2/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="~/lib/toastr/toastr.min.css" rel="stylesheet" />
+    <link href="~/css/jquery-confirm.css" rel="stylesheet" />
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
@@ -65,7 +71,7 @@
                         <!-- Add icons to the links using the .nav-icon class
                              with font-awesome or any other icon font library -->
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
+                            <a href="/Patient/Index" class="nav-link">
                                 <i class="nav-icon fas fa-edit"></i>
                                 <p>Patient</p>
                             </a>
@@ -80,15 +86,21 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="Settings/NCD" class="nav-link">
+                                    <a href="/Settings/NCD" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>NCD</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="Settings/Allergies" class="nav-link">
+                                    <a href="/Settings/Allergies" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Allergies</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/Settings/Disease" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Disease</p>
                                     </a>
                                 </li>
                                 
@@ -130,8 +142,9 @@
     <script>
         $.widget.bridge('uibutton', $.ui.button)
     </script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Bootstrap 4 -->
-    <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    @* <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script> *@
     <!-- ChartJS -->
     <script src="~/plugins/chart.js/Chart.min.js"></script>
     <!-- Sparkline -->
@@ -153,9 +166,16 @@
     <!-- AdminLTE App -->
     <script src="~/dist/js/adminlte.js"></script>
     <!-- AdminLTE for demo purposes -->
-    <script src="~/dist/js/demo.js"></script>
+    
+    <script src="~/js/jquery-confirm.js"></script>
+    <script src="~/lib/datatables/datatables.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/select2/dist/js/select2.min.js"></script>
+    <script src="~/lib/toastr/toastr.min.js"></script>
+    <script src="~/js/common.js"></script>
+    @* <script src="~/dist/js/demo.js"></script> *@
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-    @* <script src="~/dist/js/pages/dashboard.js"></script> *@
+   
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

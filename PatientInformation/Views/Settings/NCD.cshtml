@@ -16,7 +16,7 @@
 </div><!-- /.row -->
 <!-- /.content-header -->
 <div class="row">
-    <div class="col-3">
+    <div class="col-md-3">
         <div class="card" id="addNCD">
             <div class="card-header">
                 <h3 class="card-title">Add New NCD</h3>
@@ -25,7 +25,8 @@
                 <form id="addNCDForm" method="post">
                     <div class="form-group">
                         <label for="addName">Name<span class="text-danger">*</span></label>
-                        <input type="text" id="addName" name="addName" class="form-control-sm form-control" required placeholder="e.g Name" />
+                        <input type="hidden" id="id" />
+                        <input type="text" id="addName" name="addName" autocomplete="off" class="form-control-sm form-control" required placeholder="e.g Name" />
                     </div>
                     <br />
                     <div class="form-group">
@@ -35,7 +36,7 @@
             </div>
         </div>
     </div>
-    <div class="col-4">
+    <div class="col-md-4">
         <div class="card">
             <div class="card-header">
                 <div class="row">
@@ -43,7 +44,8 @@
                 </div>
             </div>
             <div class="card-body">
-                <table id="tblDealerInfo" class="table table-bordered table-bordered table-sm">
+                <div class="table-responsive">
+                     <table id="tblNCDInfo" class="table table-bordered table-bordered table-sm">
                     <thead>
                         <tr>
                             <th style="width:5%;">Sl</th>
@@ -53,7 +55,211 @@
                     </thead>
                     <tbody></tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#addNCDForm").find("#addName").eq(0).focus();
+        });
+        $(document).on('keydown', "#addName", function (e) {
+            if (e.which == 13) {
+                $("#btnAddNCD").click();
+            }
+        });
+        $("#btnAddNCD").click(function () {
+            if ($("#addNCDForm").valid()) {
+                $("#btnAddNCD").prop("disabled", true);
+                var btnName = $("#btnAddNCD").text();
+                var obj = {
+                    name: $("#addName").val()
+                }
+                let url = baseURL + '/api/NCD/CreateNCD';
+                if (btnName == "Update") {
+                    obj.id = $("#id").val();
+                    url = baseURL + '/api/NCD/EditNCD';
+                }
+                $.ajax({
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    url: url,
+                    dataType: "json",
+                    type: 'POST',
+                    data: JSON.stringify(obj),
+                    type: 'post',
+                    success: function (response) {
+                        if (response.type == "Success") {
+                            toastr.success(response.message, response.type);
+                            $("#addNCDForm").trigger("reset");
+                            $("#btnAddNCD").text("Save");
+                            dataTable.fnFilter();
+                        }
+                        else {
+                            toastr.error(response.message, response.type);
+                        }
+                        $("#btnAddNCD").prop("disabled", false);
+                    }
+                });
+            }
+        });
+
+        $(document).on("click", ".edit", function (e) {
+            e.preventDefault();
+            var Id = $(this).data('id');
+            var currentTableROW = $(this).closest("tr");
+            $("#id").val(Id);
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                url: baseURL + '/api/NCD/GetNCDById?id=' +Id,
+                dataType: "json",
+                type: 'get',
+                success: function (response) {
+                    $("#addName").val(response.name);
+                    $("#btnAddNCD").text("Update");
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+        $(document).on("click", ".delete", function (e) {
+            e.preventDefault();
+            var Id = $(this).data('id');
+            var currentTableROW = $(this).closest("tr");
+
+            $.confirm({
+                title: 'Delete Confirmation!',
+                content: 'Are you sure want to delete this?',
+                type: 'red',
+                typeAnimated: true,
+                buttons: {
+                    tryAgain: {
+                        text: 'Delete',
+                        btnClass: 'btn-red',
+                        action: function () {
+                            $.ajax({
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+                                url: baseURL + '/api/NCD/RemoveNCD?id=' + Id,
+                                dataType: "json",
+                                type: 'delete',
+                                success: function (res) {
+                                    if (res) {
+                                        $.confirm({
+                                            title: 'Confirmation!',
+                                            content: 'Record has been deleted successfully!',
+                                            type: 'green',
+                                            buttons: {
+                                                somethingElse: {
+                                                    text: 'Ok',
+                                                    btnClass: 'btn-blue',
+                                                    keys: ['enter'],
+                                                    action: function () {
+                                                        currentTableROW.fadeOut();
+                                                        dataTable.fnFilter();
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        $.confirm({
+                                            title: 'Confirmation!',
+                                            content: 'Cannot delete!',
+                                            type: 'green',
+                                            buttons: {
+                                                somethingElse: {
+                                                    text: 'Ok',
+                                                    btnClass: 'btn-red',
+                                                    keys: ['enter'],
+                                                    action: function () {
+                                                        dataTable.fnFilter();
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    close: function () {
+                    }
+                }
+            })
+        });
+
+
+        var dataTable = $("#tblNCDInfo").dataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "order": [0, "asc"],
+            "ajax": {
+                "url": baseURL + '/api/NCD/GetALLNCD',
+                "type": "POST",
+            },
+            drawCallback: function () {
+                var api = this.api();
+                var num_rows = api.page.info().recordsTotal;
+            },
+            "columns": [
+                {
+                    "data": null, "name": null, "render": function (data, type, val, meta) {
+                        return `<td>${meta.row + 1}</td>`;
+                    }
+                },
+                {
+                    "data": null, "name": null, "render": function (data, type, val, meta) {
+                        return `<td>${val.name}</td>`;
+                    }
+                },
+                {
+                    "orderable": false,
+                    "data": "Null",
+                    "render": function (data, type, full, meta) {
+
+                        let btnEdit = ``;
+                        btnEdit = `<a class="btn btn-sm btn-primary edit" data-id="${full.id}" href = "#" > <i class="fa fa-edit" > </i> &nbsp; Edit</a >`;
+                        let btnDelete = ``;
+                        btnDelete = `<a class="btn btn-sm btn-danger delete" data-id="${full.id}" href = "#" > <i class="fa fa-trash" > </i> &nbsp; Delete</a >`;
+
+                        return `<p class='text-center' style="padding-top:3px;margin:0;">${btnEdit}&emsp;${btnDelete}</p>`
+                    }
+
+                }
+            ]
+
+        });
+
+        $("#addNCDForm").validate({
+            rules: {
+                addName: { required: true }
+            },
+            messages: {
+                addName: 'Name is required'
+            },
+            errorElement: 'span',
+            errorPlacement: function (error, element) {
+                error.addClass('invalid-feedback');
+                element.closest('.form-group').append(error);
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass('is-invalid');
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass('is-invalid');
+            }
+        });
+    </script>
+}
