@@ -56,6 +56,12 @@ namespace PatientInformation.Controllers.Api
             var response = await _repository.GetAllergiesById(id);
             return Ok(response);
         }
+        [HttpGet("GetAllergiesDrpdown")]
+        public async Task<ActionResult<List<VmRequestModel>>> GetAllergiesDrpdown()
+        {
+            var response = await _repository.GetAllAllergies();
+            return Ok(response);
+        }
         [HttpDelete]
         [Route("RemoveAllergies")]
         public async Task<ActionResult<bool>> RemoveAllergies(int id)

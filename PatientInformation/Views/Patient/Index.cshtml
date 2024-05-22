@@ -67,7 +67,7 @@
                             <div class="col-md-12">
                                 <div class="col-md-12">
                                     <div class="row">
-                                        <label for="patientName" style="text-align:right;" class="col-md-3">Patient Name<span>*</span></label>
+                                        <label for="patientName" style="text-align:right;" class="col-md-3">Patient Name<span style="color:red;">*</span></label>
                                         <div class="col-md-9">
                                             <input type="hidden" id="patientId" />
                                             <input id="patientName" name="patientName" placeholder="e.g Patient Name" class="form-control-sm form-control" />
@@ -76,7 +76,7 @@
                                 </div>
                                 <div class="col-md-12 mt-2">
                                     <div class="row">
-                                        <label for="diseaseId" style="text-align:right;" class="col-md-3">Diseases Name<span>*</span></label>
+                                        <label for="diseaseId" style="text-align:right;" class="col-md-3">Diseases Name<span style="color:red;">*</span></label>
                                         <div class="col-md-9">
                                             <select id="diseaseId" name="diseaseId" class="form-control-sm form-control select2Modal"></select>
                                         </div>
@@ -84,7 +84,7 @@
                                 </div>
                                 <div class="col-md-12 mt-2">
                                     <div class="row">
-                                        <label for="epilepsy" style="text-align:right;" class="col-md-3">Epilepsy<span>*</span></label>
+                                        <label for="epilepsy" style="text-align:right;" class="col-md-3">Epilepsy<span style="color:red;">*</span></label>
                                         <div class="col-md-9">
                                             <select id="epilepsy" name="epilepsy" class="form-control-sm form-control select2Modal"></select>
                                         </div>
@@ -94,22 +94,15 @@
                                     <div class="row">
                                         <label for="ncd" style="margin-top:75px;text-align:right;" class="col-md-3">Other NCDs</label>
                                         <div class="col-md-9">
-                                            <div class="row">
-                                                <div class="col-md-5" style="overflow:scroll;overflow-x:hidden;min-height:200px;border:1px solid;">
-                                                    <ul style="list-style-type: none;">
-                                                        <li>Asthma</li>
-                                                        <li>Cancer</li>
-                                                        <li>Disorder of ear</li>
-                                                        <li>Disorder of eye</li>
-                                                        <li>Mental illness</li>
-                                                        <li>Oral Health Problem</li>
-                                                    </ul>
+                                            <div class="row" style="padding-left:8px;padding-right:8px;">
+                                                <div class="col-md-5" id="ncdDrpContainer" style="overflow:scroll;overflow-x:hidden;min-height:200px;border:1px solid;">
+                                                    
                                                 </div>
                                                 <div class="col-md-2">
-                                                    <button style="margin-top:63px;margin-bottom:4px;margin-left:20px; width:78px;" type="button" class="btn btn-success btn-sm" id="btnAdd">Add  &nbsp;<i class="fa fa-chevron-right" style="font-size:12px;"></i></button><br />
-                                                    <button style="margin-left:20px;" type="button" class="btn btn-danger btn-sm" id="btnRemove"><i class="fa fa-chevron-left" style="font-size:12px;"></i>&nbsp; Remove</button>
+                                                    <button style="margin-top:63px;margin-bottom:4px;margin-left:20px; width:78px;" type="button" class="btn btn-success btn-sm" id="btnAddNCD">Add  &nbsp;<i class="fa fa-chevron-right" style="font-size:12px;"></i></button><br />
+                                                    <button style="margin-left:20px;" type="button" class="btn btn-danger btn-sm" id="btnRemoveNCD"><i class="fa fa-chevron-left" style="font-size:12px;"></i>&nbsp; Remove</button>
                                                 </div>
-                                                <div class="col-md-5" style="overflow:scroll;overflow-x:hidden;min-height:200px;border:1px solid;">
+                                                <div class="col-md-5" id="ncdContainer" style="overflow:scroll;overflow-x:hidden;min-height:200px;border:1px solid;">
                                                 </div>
                                             </div>
                                         </div>
@@ -119,25 +112,15 @@
                                     <div class="row">
                                         <label for="allergies" style="margin-top:75px;text-align:right;" class="col-md-3">Allergies</label>
                                         <div class="col-md-9">
-                                            <div class="row">
-                                                <div class="col-md-5" style="overflow:scroll;overflow-x:hidden;min-height:200px;border:1px solid;">
-                                                    <ul style="list-style-type: none;">
-                                                        <li>Drugs-Penicillin</li>
-                                                        <li>Drugs-Others</li>
-                                                        <li>Animals</li>
-                                                        <li>Food</li>
-                                                        <li>Oinments</li>
-                                                        <li>Plant</li>
-                                                        <li>Sprays</li>
-                                                        <li>Others</li>
-                                                        <li>No Allergies</li>
-                                                    </ul>
+                                            <div class="row" style="padding-left:8px;padding-right:8px;">
+                                                <div class="col-md-5" id="allergiesDrpContainer" style="overflow:scroll;overflow-x:hidden;min-height:200px;border:1px solid;">
+                                                   
                                                 </div>
                                                 <div class="col-md-2">
-                                                    <button style="margin-top:63px;margin-bottom:4px;margin-left:20px; width:78px;" type="button" class="btn btn-success btn-sm" id="btnAdd">Add  &nbsp;<i class="fa fa-chevron-right" style="font-size:12px;"></i></button><br />
-                                                    <button style="margin-left:20px;" type="button" class="btn btn-danger btn-sm" id="btnRemove"><i class="fa fa-chevron-left" style="font-size:12px;"></i>&nbsp; Remove</button>
+                                                    <button style="margin-top:63px;margin-bottom:4px;margin-left:20px; width:78px;" type="button" class="btn btn-success btn-sm" id="btnAddAllergies">Add  &nbsp;<i class="fa fa-chevron-right" style="font-size:12px;"></i></button><br />
+                                                    <button style="margin-left:20px;" type="button" class="btn btn-danger btn-sm" id="btnRemoveAllergies"><i class="fa fa-chevron-left" style="font-size:12px;"></i>&nbsp; Remove</button>
                                                 </div>
-                                                <div class="col-md-5" style="overflow:scroll;overflow-x:hidden;min-height:200px;border:1px solid;">
+                                                <div class="col-md-5" id="allergiesContainer" style="overflow:scroll;overflow-x:hidden;min-height:200px;border:1px solid;">
                                                 </div>
                                             </div>
                                         </div>
@@ -165,6 +148,10 @@
         $(document).ready(function () {
             
         });
+        var allNCD = [];
+        var allSelectedNCD = [];
+        var allAllergies = [];
+        var allSelectedAllergies = [];
         function getDiseaseDrpdown() {
             $.ajax({
                 headers: {
@@ -203,13 +190,165 @@
                 }
             });
         };
+        function getAllNCDDrpdown() {
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                url: baseURL + '/api/NCD/GetNCDDrpdown',
+                dataType: "json",
+                type: 'get',
+                success: function (res) {
+                    allNCD = res;
+                    loadAllNCD();
+                }
+            });
+        };
+        function getAllergiesDrpdown() {
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                url: baseURL + '/api/Allergies/GetAllergiesDrpdown',
+                dataType: "json",
+                type: 'get',
+                success: function (res) {
+                    allAllergies = res;
+                    loadAllAllergies();
+                }
+            });
+        };
+        function loadAllNCD() {
+                    $("#ncdDrpContainer").empty();
+                    let option = ``;
+                    $.each(allNCD, function (key, val) {
+                        option += `<li id=${val.id}>${val.name}</li>`;
+                    });
+                    let content = `<ul id="ncdDrpUl" style="list-style-type: none;margin-left:-30px;">
+                                        ${option}
+                                    </ul>`;
+                    $("#ncdDrpContainer").append(content);
+        };
+        function loadAllAllergies() {
+            $("#allergiesDrpContainer").empty();
+                    let option = ``;
+                    $.each(allAllergies, function (key, val) {
+                        option += `<li id=${val.id}>${val.name}</li>`;
+                    });
+                    let content = `<ul id="allergiesDrpUl" style="list-style-type: none;margin-left:-30px;">
+                                        ${option}
+                                    </ul>`;
+                    $("#allergiesDrpContainer").append(content);
+        };
+        function loadSelectedNCD() {
+            if (allSelectedNCD.length == 0) {
+                toastr.error("Please select NCD!", "Error");
+                return;
+            }
+            $("#ncdContainer").empty();
+                    let option = ``;
+                    $.each(allSelectedNCD, function (key, val) {
+                        option += `<li id=${val.id} >${val.name}</li>`;
+                    });
+                    let content = `<ul id="ncdUl" style="list-style-type: none;margin-left:-30px;">
+                                        ${option}
+                                    </ul>`;
+            $("#ncdContainer").append(content);
+        };
+        function loadSelectedAllergies() {
+            if (allSelectedAllergies.length == 0) {
+                toastr.error("Please select Allergies!", "Error");
+                return;
+            }
+            $("#allergiesContainer").empty();
+                    let option = ``;
+                    $.each(allSelectedAllergies, function (key, val) {
+                        option += `<li id=${val.id} >${val.name}</li>`;
+                    });
+                    let content = `<ul id="allergiesUl" style="list-style-type: none;margin-left:-30px;">
+                                        ${option}
+                                    </ul>`;
+            $("#allergiesContainer").append(content);
+        };
         $(document).on("click", "#btnAdd", function () {
             $("#modalPatient #modalTitle").text("Create Patient");
             $("#modalPatient #btnSave").text("Save changes");
             $("#frmPatient").trigger("reset");
             getDiseaseDrpdown();
             getEpilepsyDrpdown();
+            getAllNCDDrpdown();
+            getAllergiesDrpdown();
             $("#modalPatient").modal("show");
+        });
+        $(document).on("click", "#ncdDrpUl li", function () {
+            let Id = $(this).attr("id");
+            let Name = $(this).text();
+            var model = {
+                id: Id,
+                name: Name
+            }
+            if (allSelectedNCD.filter(e => e.id === Id).length == 0) {
+                allSelectedNCD.push(model);
+                $(this).css("color", "chocolate");
+            } else {
+                allSelectedNCD = allSelectedNCD.filter(e => e.id != Id);
+                $(this).css("color", "black");
+            }
+        });
+        $(document).on("click", "#allergiesDrpUl li", function () {
+            let Id = $(this).attr("id");
+            let Name = $(this).text();
+            var model = {
+                id: Id,
+                name: Name
+            }
+            if (allSelectedAllergies.filter(e => e.id === Id).length == 0) {
+                allSelectedAllergies.push(model);
+                $(this).css("color", "chocolate");
+            } else {
+                allSelectedAllergies = allSelectedAllergies.filter(e => e.id != Id);
+                $(this).css("color", "black");
+            }
+        });
+        $(document).on("click", "#btnAddNCD", function () {
+            loadSelectedNCD();
+        });
+        $(document).on("click", "#btnAddAllergies", function () {
+            loadSelectedAllergies();
+        });
+
+        $(document).on("click", "#ncdUl li", function () {
+            let Id = $(this).attr("id");
+            let Name = $(this).text();
+            var model = {
+                id: Id,
+                name: Name
+            }
+            if (allSelectedNCD.filter(e => e.id === Id).length > 0) {
+                allSelectedNCD = allSelectedNCD.filter(e => e.id != Id);
+                $(this).css("color", "chocolate");
+            }
+        });
+        $(document).on("click", "#allergiesUl li", function () {
+            let Id = $(this).attr("id");
+            let Name = $(this).text();
+            var model = {
+                id: Id,
+                name: Name
+            }
+            if (allSelectedAllergies.filter(e => e.id === Id).length > 0) {
+                allSelectedAllergies = allSelectedAllergies.filter(e => e.id != Id);
+                $(this).css("color", "chocolate");
+            }
+        });
+
+        $(document).on("click", "#btnRemoveNCD", function () {
+            loadSelectedNCD();
+        });
+        $(document).on("click", "#btnRemoveAllergies", function () {
+            loadSelectedAllergies();
         });
     </script>
 }

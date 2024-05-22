@@ -1,34 +1,33 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PatientInformation.Models.ViewModels;
 using PatientInformation.Repository.Interface;
-using System.Globalization;
 
 namespace PatientInformation.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class NCDController : ControllerBase
+    public class PatientController : ControllerBase
     {
-        private readonly INCDRepository _repository;
-        public NCDController(INCDRepository repository)
+        private readonly IPatientRepository _repository;
+        public PatientController(IPatientRepository patientRepository)
         {
-            _repository = repository;
+                _repository = patientRepository;
         }
-        [HttpPost("CreateNCD")]
-        public async Task<ActionResult<VmResponseMessage>> CreateNCD(VmRequestModel vm)
+        [HttpPost("CreatePatient")]
+        public async Task<ActionResult<VmResponseMessage>> CreatePatient(VmRequestModel vm)
         {
-            var response = await _repository.CreateNCD(vm);
+            var response = await _repository.CreatePatient(vm);
             return Ok(response);
         }
-        [HttpPost("EditNCD")]
-        public async Task<ActionResult<VmResponseMessage>> EditNCD(VmRequestModel vm)
+        [HttpPost("EditPatient")]
+        public async Task<ActionResult<VmResponseMessage>> EditPatient(VmRequestModel vm)
         {
-            var response = await _repository.EditNCD(vm);
+            var response = await _repository.EditPatient(vm);
             return Ok(response);
         }
-        [Route("GetAllNCD")]
+        [Route("GetAllPatient")]
         [HttpPost]
-        public async Task<ActionResult<List<VmRequestModel>>> GetAllNCD()
+        public async Task<ActionResult<List<VmRequestModel>>> GetAllPatient()
         {
             var draw = Request.Form["draw"].FirstOrDefault();
             var start = Request.Form["start"].FirstOrDefault();
@@ -39,7 +38,7 @@ namespace PatientInformation.Controllers.Api
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
 
-            var data = await _repository.GetAllNCD();
+            var data = await _repository.GetAllPatient();
             if (!string.IsNullOrEmpty(searchValue))
             {
                 data = data.Where(x => x.Name.ToLower().Contains(searchValue.ToLower())).ToList();
@@ -51,25 +50,18 @@ namespace PatientInformation.Controllers.Api
             var records = data.Skip(skip).Take(pageSize).ToList();
             return Ok(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = records });
         }
-        [HttpGet("GetNCDById")]
-        public async Task<ActionResult<VmRequestModel>> GetNCDById(int id)
+        [HttpGet("GetPatientById")]
+        public async Task<ActionResult<VmRequestModel>> GetPatientById(int id)
         {
-            var response = await _repository.GetNCDById(id);
-            return Ok(response);
-        }
-        [HttpGet("GetNCDDrpdown")]
-        public async Task<ActionResult<List<VmRequestModel>>> GetNCDDrpdown()
-        {
-            var response = await _repository.GetAllNCD();
+            var response = await _repository.GetPatientById(id);
             return Ok(response);
         }
         [HttpDelete]
-        [Route("RemoveNCD")]
-        public async Task<ActionResult<bool>> RemoveNCD(int id)
+        [Route("RemovePatient")]
+        public async Task<ActionResult<bool>> RemovePatient(int id)
         {
-           var response =  await _repository.RemoveNCD(id);
+            var response = await _repository.RemovePatient(id);
             return Ok(response);
         }
-
     }
 }
