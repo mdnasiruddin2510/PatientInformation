@@ -14,20 +14,20 @@ namespace PatientInformation.Controllers.Api
                 _repository = patientRepository;
         }
         [HttpPost("CreatePatient")]
-        public async Task<ActionResult<VmResponseMessage>> CreatePatient(VmRequestModel vm)
+        public async Task<ActionResult<VmResponseMessage>> CreatePatient(VmPatient vm)
         {
             var response = await _repository.CreatePatient(vm);
             return Ok(response);
         }
         [HttpPost("EditPatient")]
-        public async Task<ActionResult<VmResponseMessage>> EditPatient(VmRequestModel vm)
+        public async Task<ActionResult<VmResponseMessage>> EditPatient(VmPatient vm)
         {
             var response = await _repository.EditPatient(vm);
             return Ok(response);
         }
         [Route("GetAllPatient")]
         [HttpPost]
-        public async Task<ActionResult<List<VmRequestModel>>> GetAllPatient()
+        public async Task<ActionResult<List<VmPatient>>> GetAllPatient()
         {
             var draw = Request.Form["draw"].FirstOrDefault();
             var start = Request.Form["start"].FirstOrDefault();
@@ -51,9 +51,21 @@ namespace PatientInformation.Controllers.Api
             return Ok(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = records });
         }
         [HttpGet("GetPatientById")]
-        public async Task<ActionResult<VmRequestModel>> GetPatientById(int id)
+        public async Task<ActionResult<VmPatient>> GetPatientById(int id)
         {
             var response = await _repository.GetPatientById(id);
+            return Ok(response);
+        }
+        [HttpGet("GetNCDByPatientId")]
+        public async Task<ActionResult<List<VmNcdDetails>>> GetNCDByPatientId(int id)
+        {
+            var response = await _repository.GetNCDByPatientId(id);
+            return Ok(response);
+        }
+        [HttpGet("GetAllergiesByPatientId")]
+        public async Task<ActionResult<List<VmAllergiesDetails>>> GetAllergiesByPatientId(int id)
+        {
+            var response = await _repository.GetAllergiesByPatientId(id);
             return Ok(response);
         }
         [HttpDelete]

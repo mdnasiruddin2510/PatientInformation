@@ -32,15 +32,15 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="tblNCDInfo" class="table table-bordered table-bordered table-sm">
+                    <table id="tblPatientInfo" class="table table-bordered table-bordered table-sm">
                         <thead>
                             <tr>
                                 <th style="width:5%;">Sl</th>
                                 <th style="width:20%;">Patient Name</th>
                                 <th style="width:20%;">Disease Name</th>
                                 <th style="width:20%;">Epilepsy</th>
-                                <th style="width:20%;">NCDs</th>
-                                <th style="width:20%;">Allergies</th>
+                                <th style="width:10%;text-align:center;">NCDs</th>
+                                <th style="width:10%;text-align:center">Allergies</th>
                                 <th style="width:20%;text-align:center;">Action</th>
                             </tr>
                         </thead>
@@ -142,16 +142,124 @@
 </div>
 <!-- /.modal -->
 
-
+<div class="modal fade" id="modalNcdDetail">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">NCD Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="tblNcdDetails" class="table table-bordered table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    <th style="width:5%;">Sl</th>
+                                    <th style="width:20%;">Name</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="modalAllergiesDetail">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Allergy Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="tblAllergiesDetails" class="table table-bordered table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    <th style="width:5%;">Sl</th>
+                                    <th style="width:20%;">Name</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 @section Scripts{
     <script type="text/javascript">
         $(document).ready(function () {
-            
+            getDiseaseDrpdown();
+            getEpilepsyDrpdown();
+            getAllNCDDrpdown();
+            getAllergiesDrpdown();
         });
         var allNCD = [];
         var allSelectedNCD = [];
         var allAllergies = [];
         var allSelectedAllergies = [];
+
+        $(document).on("click", "#btnSave", function () {
+            if ($("#frmPatient").valid()) {
+                $("#btnSave").prop("disabled", true);
+                var btnName = $("#btnSave").text();
+                var model = {
+                    name: $("#patientName").val(),
+                    diseaseId: $("#diseaseId").val(),
+                    epilepsyDup: $("#epilepsy").val(),
+                    ncdDetails: allSelectedNCD,
+                    allergiesDetails: allSelectedAllergies
+                }
+                let url = baseURL + '/api/Patient/CreatePatient';
+                if (btnName == "Update changes") {
+                    model.id = $("#patientId").val();
+                    url = baseURL + '/api/Patient/EditPatient';
+                }
+                $.ajax({
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    url: url,
+                    dataType: "json",
+                    type: 'POST',
+                    data: JSON.stringify(model),
+                    success: function (res) {
+                        if (res.type == "Success") {
+                            toastr.success(res.message, res.type);
+                            $("#frmPatient").trigger("reset");
+                            dataTable.fnFilter();
+                            $("#modalPatient").modal("hide");
+                        }
+                        else {
+                            toastr.error(res.message, res.type);
+                        }
+                        $("#btnSave").prop("disabled", false);
+                    }
+                });
+            }
+        });
+
         function getDiseaseDrpdown() {
             $.ajax({
                 headers: {
@@ -272,7 +380,12 @@
                                     </ul>`;
             $("#allergiesContainer").append(content);
         };
+
         $(document).on("click", "#btnAdd", function () {
+            allNCD = [];
+            allSelectedNCD = [];
+            allAllergies = [];
+            allSelectedAllergies = [];
             $("#modalPatient #modalTitle").text("Create Patient");
             $("#modalPatient #btnSave").text("Save changes");
             $("#frmPatient").trigger("reset");
@@ -280,9 +393,16 @@
             getEpilepsyDrpdown();
             getAllNCDDrpdown();
             getAllergiesDrpdown();
+            $("#btnAddNCD").prop("disabled", true);
+            $("#btnRemoveNCD").prop("disabled", true);
+            $("#btnAddAllergies").prop("disabled", true);
+            $("#btnRemoveAllergies").prop("disabled", true);
+
             $("#modalPatient").modal("show");
         });
+
         $(document).on("click", "#ncdDrpUl li", function () {
+            $("#btnAddNCD").prop("disabled", false);
             let Id = $(this).attr("id");
             let Name = $(this).text();
             var model = {
@@ -292,12 +412,15 @@
             if (allSelectedNCD.filter(e => e.id === Id).length == 0) {
                 allSelectedNCD.push(model);
                 $(this).css("color", "chocolate");
+                allNCD = allNCD.filter(e => e.id != Id);
             } else {
                 allSelectedNCD = allSelectedNCD.filter(e => e.id != Id);
                 $(this).css("color", "black");
+                allNCD.push(model);
             }
         });
         $(document).on("click", "#allergiesDrpUl li", function () {
+            $("#btnAddAllergies").prop("disabled", false);
             let Id = $(this).attr("id");
             let Name = $(this).text();
             var model = {
@@ -307,19 +430,31 @@
             if (allSelectedAllergies.filter(e => e.id === Id).length == 0) {
                 allSelectedAllergies.push(model);
                 $(this).css("color", "chocolate");
+                allAllergies = allAllergies.filter(e => e.id != Id);
             } else {
                 allSelectedAllergies = allSelectedAllergies.filter(e => e.id != Id);
                 $(this).css("color", "black");
+                allAllergies.push(model);
             }
         });
+
         $(document).on("click", "#btnAddNCD", function () {
             loadSelectedNCD();
+            loadAllNCD();
+            $("#btnAddNCD").prop("disabled", true);
+            //allSelectedNCD = [];
+
         });
         $(document).on("click", "#btnAddAllergies", function () {
             loadSelectedAllergies();
+            loadAllAllergies();
+            $("#btnAddAllergies").prop("disabled", true);
+            //allSelectedAllergies = [];
         });
 
+
         $(document).on("click", "#ncdUl li", function () {
+            $("#btnRemoveNCD").prop("disabled", false);
             let Id = $(this).attr("id");
             let Name = $(this).text();
             var model = {
@@ -329,9 +464,15 @@
             if (allSelectedNCD.filter(e => e.id === Id).length > 0) {
                 allSelectedNCD = allSelectedNCD.filter(e => e.id != Id);
                 $(this).css("color", "chocolate");
+                allNCD.push(model);
+            } else {
+                allSelectedNCD.push(model);
+                $(this).css("color", "black");
+                allNCD = allNCD.filter(e => e.id != Id);
             }
         });
         $(document).on("click", "#allergiesUl li", function () {
+            $("#btnRemoveAllergies").prop("disabled", false);
             let Id = $(this).attr("id");
             let Name = $(this).text();
             var model = {
@@ -341,14 +482,284 @@
             if (allSelectedAllergies.filter(e => e.id === Id).length > 0) {
                 allSelectedAllergies = allSelectedAllergies.filter(e => e.id != Id);
                 $(this).css("color", "chocolate");
+                allAllergies.push(model);
+            } else {
+                allSelectedAllergies.push(model);
+                $(this).css("color", "black");
+                allAllergies = allAllergies.filter(e => e.id != Id);
             }
         });
 
         $(document).on("click", "#btnRemoveNCD", function () {
             loadSelectedNCD();
+            loadAllNCD();
+            $("#btnRemoveNCD").prop("disabled", true);
         });
         $(document).on("click", "#btnRemoveAllergies", function () {
             loadSelectedAllergies();
+            loadAllAllergies();
+            $("#btnRemoveAllergies").prop("disabled", true);
+        });
+
+        var dataTable = $("#tblPatientInfo").dataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "order": [0, "asc"],
+            "ajax": {
+                "url": baseURL + '/api/Patient/GetALLPatient',
+                "type": "POST",
+            },
+            drawCallback: function () {
+                var api = this.api();
+                var num_rows = api.page.info().recordsTotal;
+            },
+            "columns": [
+                {
+                    "data": null, "name": null, "render": function (data, type, val, meta) {
+                        return `<td>${meta.row + 1}</td>`;
+                    }
+                },
+                {
+                    "data": null, "name": null, "render": function (data, type, val, meta) {
+                        return `<td>${val.name}</td>`;
+                    }
+                },
+                {
+                    "data": null, "name": null, "render": function (data, type, val, meta) {
+                        return `<td>${val.diseaseName}</td>`;
+                    }
+                },
+                {
+                    "data": null, "name": null, "render": function (data, type, val, meta) {
+                        return `<td>${val.epilepsyDup}</td>`;
+                    }
+                },
+                {
+                    "data": null, "name": null, "render": function (data, type, val, meta) {
+                        let btnNcdDetails = ``;
+                        btnNcdDetails = `<a class="btn btn-sm btn-primary ncdDetails" data-id="${val.id}" href = "#" > <i class="fa fa-eye" > </i> &nbsp; Details</a >`;
+                        return `<p class='text-center' style="padding-top:3px;margin:0;">${btnNcdDetails}</p>`
+                    }
+                },
+                {
+                    "data": null, "name": null, "render": function (data, type, val, meta) {
+                        let btnDetails = ``;
+                        btnDetails = `<a class="btn btn-sm btn-primary allergiesDetails" data-id="${val.id}" href = "#" > <i class="fa fa-eye" > </i> &nbsp; Details</a>`;
+                        return `<p class='text-center' style="padding-top:3px;margin:0;">${btnDetails}</p>`
+                    }
+                },
+                {
+                    "orderable": false,
+                    "data": "Null",
+                    "render": function (data, type, full, meta) {
+
+                        let btnEdit = ``;
+                        btnEdit = `<a class="btn btn-sm btn-primary edit" data-id="${full.id}" href ="#"> <i class="fa fa-edit"> </i></a >`;
+                        let btnDelete = ``;
+                        btnDelete = `<a class="btn btn-sm btn-danger delete" data-id="${full.id}" href = "#"> <i class="fa fa-trash"> </i></a >`;
+
+                        return `<p class='text-center' style="padding-top:3px;margin:0;">${btnEdit}&emsp;${btnDelete}</p>`
+                    }
+                }
+            ]
+
+        });
+
+        $(document).on("click", ".ncdDetails", function (e) {
+            e.preventDefault();
+            var Id = $(this).data('id');
+            var currentTableROW = $(this).closest("tr");
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                url: baseURL + '/api/Patient/GetNCDByPatientId?id=' + Id,
+                dataType: "json",
+                type: 'get',
+                success: function (res) {
+                    $("#tblNcdDetails tbody").empty();
+                    let option = ``;
+                    let sl = 0;
+                    $.each(res, function (key, val) {
+                        option += `<tr>
+                                        <td>${++sl}</td>
+                                        <td>${val.name}</td>
+                                    </tr>`;
+                    });
+                    $("#tblNcdDetails tbody").append(option);
+                    $("#modalNcdDetail").modal("show");
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+        $(document).on("click", ".allergiesDetails", function (e) {
+            e.preventDefault();
+            var Id = $(this).data('id');
+            var currentTableROW = $(this).closest("tr");
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                url: baseURL + '/api/Patient/GetAllergiesByPatientId?id=' + Id,
+                dataType: "json",
+                type: 'get',
+                success: function (res) {
+                    $("#tblAllergiesDetails tbody").empty();
+                    let option = ``;
+                    let sl = 0;
+                    $.each(res, function (key, val) {
+                        option += `<tr>
+                                                <td>${++sl}</td>
+                                                <td>${val.name}</td>
+                                            </tr>`;
+                    });
+                    $("#tblAllergiesDetails tbody").append(option);
+                    $("#modalAllergiesDetail").modal("show");
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+        $(document).on("click", ".edit", function (e) {
+            e.preventDefault();
+            var Id = $(this).data('id');
+            var currentTableROW = $(this).closest("tr");
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                url: baseURL + '/api/Patient/GetPatientById?id=' + Id,
+                dataType: "json",
+                type: 'get',
+                success: function (res) {
+                    if (res != null) {
+                        getEpilepsyDrpdown();
+                        $("#btnSave").text("Update changes");
+                        $("#patientId").val(res.id);
+                        $("#patientName").val(res.name);
+                        $("#diseaseId").val(res.diseaseId).trigger("change");
+                        $("#epilepsy").val(res.epilepsy).trigger("change");
+                        allSelectedNCD = res.ncdDetails;
+                        allSelectedAllergies = res.allergiesDetails;
+                        $.each(res.ncdDetails, function (index, value) {
+                            allNCD = allNCD.filter(e => e.id != value.id);
+                        });
+                        $.each(res.allergiesDetails, function (index, value) {
+                            allAllergies = allAllergies.filter(e => e.id != value.id);
+                        });
+                        loadAllNCD();
+                        loadAllAllergies();
+                        loadSelectedNCD();
+                        loadSelectedAllergies();
+                    }
+                    $("#modalPatient").modal("show");
+                    $("#btnAddNCD").prop("disabled", true);
+                    $("#btnRemoveNCD").prop("disabled", true);
+                    $("#btnAddAllergies").prop("disabled", true);
+                    $("#btnRemoveAllergies").prop("disabled", true);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+        $(document).on("click", ".delete", function (e) {
+            e.preventDefault();
+            var Id = $(this).data('id');
+            var currentTableROW = $(this).closest("tr");
+
+            $.confirm({
+                title: 'Delete Confirmation!',
+                content: 'Are you sure want to delete this?',
+                type: 'red',
+                typeAnimated: true,
+                buttons: {
+                    tryAgain: {
+                        text: 'Delete',
+                        btnClass: 'btn-red',
+                        action: function () {
+                            $.ajax({
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+                                url: baseURL + '/api/Patient/RemovePatient?id=' + Id,
+                                dataType: "json",
+                                type: 'delete',
+                                success: function (res) {
+                                    if (res) {
+                                        $.confirm({
+                                            title: 'Confirmation!',
+                                            content: 'Record has been deleted successfully!',
+                                            type: 'green',
+                                            buttons: {
+                                                somethingElse: {
+                                                    text: 'Ok',
+                                                    btnClass: 'btn-blue',
+                                                    keys: ['enter'],
+                                                    action: function () {
+                                                        currentTableROW.fadeOut();
+                                                        dataTable.fnFilter();
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        $.confirm({
+                                            title: 'Confirmation!',
+                                            content: 'Cannot delete!',
+                                            type: 'green',
+                                            buttons: {
+                                                somethingElse: {
+                                                    text: 'Ok',
+                                                    btnClass: 'btn-red',
+                                                    keys: ['enter'],
+                                                    action: function () {
+                                                        dataTable.fnFilter();
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    close: function () {
+                    }
+                }
+            })
+        });
+        $("#frmPatient").validate({
+            rules: {
+                patientName: { required: true },
+                diseaseId: { required: true },
+                epilepsy: { required: true }
+            },
+            messages: {
+                patientName: 'Patient Name is required',
+                diseaseId: 'Disease is required',
+                epilepsy: 'Epilepsy is required'
+            },
+            errorElement: 'span',
+            errorPlacement: function (error, element) {
+                error.addClass('invalid-feedback');
+                element.closest('.form-group').append(error);
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass('is-invalid');
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass('is-invalid');
+            }
         });
     </script>
 }

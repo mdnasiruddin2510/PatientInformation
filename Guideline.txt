@@ -1,0 +1,6 @@
+1.Click settings from left menu bar and insert all required config data.(insert data into textbox and press enter or press save button).
+2.press add new button then insert patient name,select disease,Epilepsy.
+3.first select ncd from left side then press add button.
+4.while remove please select the list from right side then press remove button.
+5.Finally save.
+
